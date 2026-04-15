@@ -26,8 +26,14 @@
         <main class="dashboard">
             <div class="left-panel">
                 <div class="card map-card">
-                    <h2>상권 지도</h2>
+                    <h2>상권 지도 (Top 100)</h2>
                     <div id="map"></div>
+                </div>
+                <div class="card strategy-card">
+                    <h2>상권 마케팅 진단 및 전략 제안</h2>
+                    <div id="strategyContent">
+                        <p class="empty-msg">분석 데이터를 바탕으로 맞춤형 마케팅 전략이 이곳에 생성됩니다.</p>
+                    </div>
                 </div>
             </div>
             <div class="right-panel">
@@ -36,7 +42,7 @@
                     <canvas id="categoryChart"></canvas>
                 </div>
                 <div class="card list-card">
-                    <h2>분석 결과 리스트</h2>
+                    <h2>상세 리스트 (5페이지 분량)</h2>
                     <div id="resultList" class="scrollable">
                         <p class="empty-msg">검색 결과가 없습니다. 상권을 검색해 보세요.</p>
                     </div>

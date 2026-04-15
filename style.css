@@ -134,14 +134,60 @@ h1 {
     color: #666;
 }
 
-.result-item .category {
-    font-size: 0.75rem;
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 2px 6px;
-    border-radius: 4px;
-    display: inline-block;
-    margin-bottom: 4px;
+.result-item .mkt-tags {
+    margin-top: 8px;
+    display: flex;
+    gap: 5px;
+}
+
+.tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.tag.link { background: #e3f2fd; color: #1976d2; }
+.tag.no-link { background: #ffebee; color: #d32f2f; }
+.tag.booking { background: #f3e5f5; color: #7b1fa2; }
+.tag.event { background: #fff3e0; color: #f57c00; }
+
+.strategy-report {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.diag-section ul {
+    list-style: none;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.diag-section li {
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.strategy-card-mini {
+    border-left: 4px solid var(--primary-color);
+    padding: 12px;
+    background: #fff;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.strategy-card-mini h4 {
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.strategy-card-mini p {
+    font-size: 0.85rem;
+    color: #555;
 }
 
 @media (max-width: 900px) {

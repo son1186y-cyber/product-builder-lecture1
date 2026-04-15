@@ -27,49 +27,68 @@ app.get('/api/search', async (req, res) => {
     const clientSecret = process.env.NAVER_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-        return res.status(500).json({ error: 'Naver API keys not configured. Please check your .env file.' });
+        return res.status(500).json({ error: 'Naver API keys not configured.' });
     }
 
     try {
-        const response = await axios.get('https://openapi.naver.com/v1/search/local.json', {
-            params: {
-                query: query,
-                display: 50, // Max results
-                start: 1,
-                sort: 'comment' // Sort by review/comment count if possible
-            },
-            headers: {
-                'X-Naver-Client-Id': clientId,
-                'X-Naver-Client-Secret': clientSecret
-            }
-        });
+        // Fetch up to 100 results (2 calls of 50 each)
+        const fetchBatch = async (start) => {
+            const response = await axios.get('https://openapi.naver.com/v1/search/local.json', {
+                params: {
+                    query: query,
+                    display: 50,
+                    start: start,
+                    sort: 'comment'
+                },
+                headers: {
+                    'X-Naver-Client-Id': clientId,
+                    'X-Naver-Client-Secret': clientSecret
+                }
+            });
+            return response.data.items;
+        };
 
-        const items = response.data.items.map(item => {
-            // Convert KATECH to WGS84
-            // Search API returns mapx, mapy as integers.
-            // These are usually in KATECH (TM128)
+        const [batch1, batch2] = await Promise.all([
+            fetchBatch(1),
+            fetchBatch(51)
+        ]);
+
+        const allItems = [...batch1, ...batch2].map((item, index) => {
             try {
                 const [lng, lat] = proj4("TM128", wgs84, [parseInt(item.mapx), parseInt(item.mapy)]);
+                
+                // Heuristic Marketing Analysis
+                const hasLink = !!item.link;
+                const hasBooking = item.description.includes('예약') || item.title.includes('예약');
+                const hasEvent = item.description.includes('이벤트') || item.description.includes('할인') || item.description.includes('서비스');
+                const descLength = item.description.length;
+
                 return {
-                    title: item.title.replace(/<[^>]*>?/gm, ''), // Remove HTML tags
+                    id: index + 1,
+                    title: item.title.replace(/<[^>]*>?/gm, ''),
                     category: item.category,
                     description: item.description,
                     address: item.address,
                     roadAddress: item.roadAddress,
                     lat,
                     lng,
-                    link: item.link
+                    link: item.link,
+                    marketing: {
+                        hasLink,
+                        hasBooking,
+                        hasEvent,
+                        descLength
+                    }
                 };
             } catch (err) {
-                console.error('Coordinate conversion error:', err);
-                return { ...item, lat: 0, lng: 0 };
+                return null;
             }
-        });
+        }).filter(item => item !== null);
 
-        res.json({ items });
+        res.json({ items: allItems });
     } catch (error) {
-        console.error('API Error:', error.response ? error.response.data : error.message);
-        res.status(error.response ? error.response.status : 500).json({ error: 'Failed to fetch data from Naver API' });
+        console.error('API Error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch data' });
     }
 });
 
