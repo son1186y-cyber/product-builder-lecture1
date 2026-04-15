@@ -27,7 +27,8 @@ async function searchPlaces() {
         const data = await response.json();
 
         if (data.error) {
-            alert(data.error);
+            console.error('API Error details:', data.details);
+            alert(`오류: ${data.error}\n발생 원인: ${data.details || '알 수 없음'}`);
             return;
         }
 
