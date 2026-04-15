@@ -10,6 +10,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Proj4 definitions
+// Naver Search API coordinates are in KATECH (TM128) - Bessel based
+proj4.defs("TM128", "+proj=tmerc +lat_0=38 +lon_0=128 +k=1 +x_0=400000 +y_0=600000 +ellps=bessel +units=m +no_defs +towgs84=-146.43,507.89,681.46");
+// WGS84 for Leaflet
+const wgs84 = "EPSG:4326";
+
 // API 라우트를 static 설정보다 위에 배치 (경로 우선순위 확보)
 app.get('/api/search', async (req, res) => {
     let { query } = req.query;
